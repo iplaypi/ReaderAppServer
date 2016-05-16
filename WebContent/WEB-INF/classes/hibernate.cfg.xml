@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<!-- 数据库连接信息配置 -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql:///readerapp</property>
+		<property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property>
+
+		<!-- c3p0连接池配置 -->
+		<property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider
+		</property>
+		<!-- 连接池中保留的最大连接数 -->
+		<property name="hibernate.c3p0.max_size">50</property>
+		<property name="hibernate.c3p0.maxIdleTime">60</property>
+		<!-- 连接池中保留的最小连接数 -->
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.timeout">60</property>
+		<!-- 控制数据源内加载的PreparedStatements数量。如果maxStatements与maxStatementsPerConnection均为0，则缓存被关闭 -->
+		<property name="hibernate.c3p0.max_statements">5</property>
+		<property name="hibernate.c3p0.max_statementsPerConnection">5</property>
+		<!-- 最大空闲时间,120秒内未使用则连接被丢弃。若为0则永不丢弃 -->
+		<property name="hibernate.c3p0.idle_test_period">120</property>
+		<!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数 -->
+		<property name="hibernate.c3p0.acquire_increment">2</property>
+
+		<!-- session配置 事务管理配置 -->
+		<!-- <property name="hibernate.current_session_context_class">jta</property> -->
+
+		<!-- 其它信息配置(根据需要配不配置都行) -->
+		<property name="show_sql">false</property>
+		<property name="hibernate.format_sql">true</property>
+		<property name="hbm2ddl.auto">update</property>
+
+		<!-- 实体类映射文件配置 -->
+		<!-- <mapping resource="cn/bean/UserInfo.hbm.xml" /> -->
+		<!-- 我使用注解的形式 -->
+		<mapping class="pers.perry.readerapp.bean.Home" />
+		<mapping class="pers.perry.readerapp.bean.Article" />
+		<mapping class="pers.perry.readerapp.bean.Picture" />
+		<mapping class="pers.perry.readerapp.bean.MaxId" />
+		<mapping class="pers.perry.readerapp.bean.UserInfo" />
+
+	</session-factory>
+</hibernate-configuration>

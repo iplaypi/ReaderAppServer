@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+	"http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+
+	<!-- 设置开发者模式可用 会在浏览器中显示错误信息 -->
+	<constant name="struts.devMode" value="true" />
+	<!-- 设置编码utf-8 -->
+	<constant name="struts.i18n.ecoding" value="utf-8" />
+	<!-- 设置默认扩展名为action -->
+	<constant name="struts.action.extension" value="action" />
+	<!-- 设置主题为simple -->
+	<constant name="struts.ui.theme" value="simple" />
+	<!-- 设置浏览器是否缓存静态内容,默认值为true(生产环境下使用),开发阶段最好关闭 -->
+	<constant name="struts.serve.static.browserCache" value="false" />
+	<!-- 当struts的配置文件修改后,系统是否自动重新加载该文件,默认值为false(生产环境下使用),开发阶段最好打开 -->
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!-- 指定允许上传的文件最大字节数。默认值是2097152(2M) -->
+	<!-- 我配置20m,拦截器会再次拦截的,并返回信息.这里配置太小的话,没有返回信息,请求页面直接挂掉 -->
+	<constant name="struts.multipart.maxSize" value="20971520" />
+	<constant name="struts.multipart.maxSize.limit" value="选择的文件太大,请重试."></constant>
+	<constant name="struts.messages.error.content.type.not.allowed"
+		value="选择的文件格式错误,请重试."></constant>
+
+	<!-- 设置上传文件的临时文件夹,默认使用javax.servlet.context.tempdir -->
+	<!-- <constant name="struts.multipart.saveDir " value="d:/" /> -->
+
+
+	<!-- 使用struts自带的插件包,返回json数据,注意extends配置和result配置 -->
+	<package name="default" namespace="/" extends="struts-default,json-default">
+
+
+		<!-- 定义一个验证登录拦截器 -->
+		<interceptors>
+			<interceptor name="loginInterceptor"
+				class="pers.perry.readerapp.interceptor.LoginInterceptor">
+			</interceptor>
+			<!-- 登录拦截器栈 -->
+			<interceptor-stack name="loginStack">
+				<interceptor-ref name="loginInterceptor">
+					<param name="excludeMethods">byIdJson</param>
+				</interceptor-ref>
+				<!-- 为了完整传递参数,默认栈不可缺少,放在最后 -->
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+
+		<!-- 定义全局Result -->
+		<global-results>
+			<!-- 当返回"login"时(肯定是拦截器返回的),一律转发到login.jsp页面 -->
+			<result name="login" type="dispatcher">/login.jsp</result>
+		</global-results>
+
+
+		<!-- 配置登录Action -->
+		<action name="login_*" class="pers.perry.readerapp.action.LoginAction"
+			method="{1}">
+			<!-- 成功,进到主界面 -->
+			<result name="success" type="redirectAction">
+				login_main
+			</result>
+			<!-- 转发到登录页面,提示错误信息 -->
+			<result name="error" type="dispatcher">/login.jsp</result>
+			<result name="main" type="dispatcher">
+				/WEB-INF/jsp/main.jsp
+			</result>
+			<result name="infoUI" type="dispatcher">
+				/WEB-INF/jsp/userinfo/infoUI.jsp
+			</result>
+			<result name="updateUI" type="dispatcher">
+				/WEB-INF/jsp/userinfo/updateUI.jsp
+			</result>
+			<result name="exit" type="redirect">
+				/login.jsp
+			</result>
+			<!-- 使用拦截器(或者拦截栈),一般配置在result之后， -->
+			<!-- 指定登录验证拦截栈 -->
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="loginInterceptor">
+				<!-- 拦截器黑名单(登录不必拦截) -->
+				<param name="excludeMethods">login</param>
+			</interceptor-ref>
+		</action>
+
+
+		<!-- 配置主页Action -->
+		<action name="home_*" class="pers.perry.readerapp.action.HomeAction"
+			method="{1}">
+			<result name="success" type="json">
+				<param name="contentType">text/html</param>
+				<param name="root">home</param>
+			</result>
+			<result name="list" type="dispatcher">
+				/WEB-INF/jsp/home/list.jsp
+			</result>
+			<!-- 添加或者删除数据后,重定向到article_list即可(重定向方式自动补上.action,再一次请求) -->
+			<result name="toList" type="redirectAction">home_list</result>
+			<result name="editUI" type="dispatcher">/WEB-INF/jsp/home/editUI.jsp
+			</result>
+			<result name="addUI" type="dispatcher">/WEB-INF/jsp/home/addUI.jsp
+			</result>
+			<result name="infoUI" type="dispatcher">/WEB-INF/jsp/home/infoUI.jsp
+			</result>
+			<!-- 使用拦截器(或者拦截栈),一般配置在result之后， -->
+			<!-- 指定登录验证拦截栈 -->
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="loginInterceptor">
+				<!-- 拦截器黑名单(获取Json数据的方法不必拦截) -->
+				<param name="excludeMethods">byIdJson</param>
+			</interceptor-ref>
+		</action>
+
+
+		<!-- 配置文章Action -->
+		<action name="article_*" class="pers.perry.readerapp.action.ArticleAction"
+			method="{1}">
+			<result name="success" type="json">
+				<param name="contentType">text/html</param>
+				<param name="root">article</param>
+			</result>
+			<result name="list" type="dispatcher">
+				/WEB-INF/jsp/article/list.jsp
+			</result>
+			<!-- 添加或者删除数据后,重定向到article_list即可(重定向方式自动补上.action,再一次请求) -->
+			<result name="toList" type="redirectAction">article_list</result>
+			<result name="editUI" type="dispatcher">/WEB-INF/jsp/article/editUI.jsp
+			</result>
+			<result name="addUI" type="dispatcher">/WEB-INF/jsp/article/addUI.jsp
+			</result>
+			<result name="infoUI" type="dispatcher">/WEB-INF/jsp/article/infoUI.jsp
+			</result>
+			<!-- 使用拦截器(或者拦截栈),一般配置在result之后， -->
+			<!-- 指定登录验证拦截栈 -->
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="loginInterceptor">
+				<!-- 拦截器黑名单(获取Json数据的方法不必拦截) -->
+				<param name="excludeMethods">byIdJson</param>
+			</interceptor-ref>
+		</action>
+
+
+		<!-- 配置图片Action -->
+		<action name="picture_*" class="pers.perry.readerapp.action.PictureAction"
+			method="{1}">
+			<result name="success" type="json">
+				<param name="contentType">text/html</param>
+				<param name="root">picture</param>
+			</result>
+			<result name="list" type="dispatcher">
+				/WEB-INF/jsp/picture/list.jsp
+			</result>
+			<!-- 添加或者删除数据后,重定向到article_list即可(重定向方式自动补上.action,再一次请求) -->
+			<result name="toList" type="redirectAction">picture_list</result>
+			<result name="editUI" type="dispatcher">/WEB-INF/jsp/picture/editUI.jsp
+			</result>
+			<result name="addUI" type="dispatcher">/WEB-INF/jsp/picture/addUI.jsp
+			</result>
+			<result name="infoUI" type="dispatcher">/WEB-INF/jsp/picture/infoUI.jsp
+			</result>
+			<!-- 使用拦截器(或者拦截栈),一般配置在result之后， -->
+			<!-- 指定登录验证拦截栈 -->
+			<interceptor-ref name="defaultStack" />
+			<interceptor-ref name="loginInterceptor">
+				<!-- 拦截器黑名单(获取Json数据的方法不必拦截) -->
+				<param name="excludeMethods">byIdJson</param>
+			</interceptor-ref>
+		</action>
+
+
+		<!-- 配置上传管理Action -->
+		<action name="upload_*" class="pers.perry.readerapp.action.UploadAction"
+			method="{1}">
+			<result name="list" type="dispatcher">
+				/WEB-INF/jsp/upload/list.jsp
+			</result>
+			<!-- 添加或者删除数据后,重定向到upload_list即可(重定向方式自动补上.action,再一次请求) -->
+			<result name="toList" type="redirectAction">upload_list</result>
+			<result name="addUI" type="dispatcher">/WEB-INF/jsp/upload/addUI.jsp
+			</result>
+			<result name="deleteUI" type="dispatcher">/WEB-INF/jsp/upload/deleteUI.jsp
+			</result>
+			<result name="input" type="dispatcher">/WEB-INF/jsp/upload/errorUI.jsp
+			</result>
+			<!-- 使用拦截器(或者拦截栈),一般配置在result之后， -->
+			<interceptor-ref name="fileUpload">
+				<!-- 文件类型过滤 -->
+				<!-- <param name="allowedTypes">image/bmp,image/png,image/gif,image/jpeg,audio/x-mpeg,audio/mpeg</param> -->
+				<!-- 文件大小, 以字节B为单位(12m,1024*1024*12) -->
+				<param name="maximumSize">12582912</param>
+			</interceptor-ref>
+			<!-- defaultStack一定要在fileUpload之后,否则fileUpload无效(因为fileUpload是在defaultStack上面做出修改) -->
+			<interceptor-ref name="defaultStack" />
+			<!-- 指定登录验证拦截栈 -->
+			<!-- <interceptor-ref name="loginInterceptor"> </interceptor-ref> -->
+		</action>
+
+
+		<!-- 配置最大id管理Action -->
+		<action name="maxIdManage_*" class="pers.perry.readerapp.action.MaxIdManageAction"
+			method="{1}">
+			<result name="success" type="json">
+				<param name="contentType">text/html</param>
+				<param name="root">maxId</param>
+			</result>
+		</action>
+
+
+		<!-- 配置点赞管理Action -->
+		<action name="likeManage_*" class="pers.perry.readerapp.action.LikeManageAction"
+			method="{1}">
+			<result name="success" type="json">
+				<param name="contentType">text/html</param>
+				<param name="root">map</param>
+			</result>
+		</action>
+
+
+	</package>
+
+</struts>

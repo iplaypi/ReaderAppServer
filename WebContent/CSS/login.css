@@ -1,0 +1,86 @@
+*{
+	margin: 0 auto;
+	padding: 0;
+	font-family: 微软雅黑;
+	font-size: 16px;
+}
+body{
+	background: url(../images/bg_login.jpg);
+}
+#main{
+	width: 1366px;
+	height: 639px;
+}
+#title{
+	width: 248px;
+	color: #fff;
+	font-size: 30px;
+	position: relative;
+	top: 120px;
+	display: block;
+	letter-spacing: 1px;
+	font-weight: normal;
+}
+#login{
+	width: 463px;
+	height: 330px;
+	background-color: #F9FDFD;
+	position: relative;
+	top: 150px;
+	border-radius: 4px;	
+	box-shadow: 2px 2px 2px #888888;
+}
+#loginTip{
+	width: 388px;
+	height: 50px;
+}
+#loginForm{
+	width: 380px;
+	height: 250px;
+}
+#loginInfo{
+	width: 378px;
+	height: 102px;
+	border: 1px solid #ced1d0;
+	border-radius: 4px;
+	overflow: hidden;
+	margin-bottom: 10px;
+}
+#username{
+	font-size: 18px;
+	color: #525252;
+	width: 338px;
+	height: 51px;
+	padding-left: 40px;
+	border: none;
+	outline: none;
+	border-bottom: 1px solid #e5e5e5;
+	background: url(../images/username.png) 5px no-repeat;
+}
+#username:focus{
+	/*border-bottom: 1px solid black; */
+}
+#password{
+	font-size: 18px;
+	width: 338px;
+	height: 50px;
+	padding-left: 40px;
+	border: none;
+	outline: none;
+	background: url(../images/password.png) 5px no-repeat;
+}
+.font1{
+	color: #999;
+	font-size: 15px;
+}
+#loginSubmit{
+	margin-top: 35px;
+	width: 378px;
+	height: 49px;
+	background: #33B5E5;
+	border: none;
+	letter-spacing: 20px;
+	font-size: 21px;
+	color: #fff;
+	border-radius: 2px;
+}
